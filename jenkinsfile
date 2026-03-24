@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "rohitrawat891997/petclinic-app:latest"
+    }
+
+    stages {
+
+        stage('Cloning') {
+            steps {
+                git branch: 'main', url: 'https://github.com/RohitRawat891997/spring-petclinic.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                sh '''
+                docker rm -f web || true
+                docker run -d --name web -p 8081:8080 $IMAGE_NAME
+                '''
+            }
+        }
+    }
+}
